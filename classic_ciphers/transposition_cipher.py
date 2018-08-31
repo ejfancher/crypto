@@ -1,4 +1,5 @@
 import math
+import random
 
 class nihilists_cipher:
     def __init__(self):
@@ -28,7 +29,7 @@ class nihilists_cipher:
                 if k < len(text):
                     box1[i][j] = text[k]
                 else:
-                    box1[i][j] = 'z'
+                    box1[i][j] = chr(88 + random.randrange(0, 3))
                 j += 1
                 k += 1
             i += 1
@@ -43,11 +44,11 @@ class nihilists_cipher:
         return text
 
     def encrypt(self, plaintext, key):
+        key = key.lower().replace(' ','')
         dim = len(key)
-        key = key.lower()
-        plaintext = plaintext.replace(' ','')
+        plaintext = plaintext.upper().replace(' ','')
         if math.pow(dim, dim) < len(plaintext):
-            print('For the nihilist\'s cifer, the plaintext can only be the length of the key squared number of characters')
+            print('For the nihilist\'s cipher, the plaintext can only be the length of the key squared number of characters')
             return
         key_alpha_ranks = self.key_to_alpha_rank(key)
         box1 = self.text_to_box1(plaintext, dim)
