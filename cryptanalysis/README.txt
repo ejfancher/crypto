@@ -8,9 +8,9 @@ Libraries used:
 
 
 
-Command line options:
+Command line usage:
 
-usage: ctool.py [-h] [-c] [-n N] [-p] [-d] file
+./ctool.py [-h] [-c] [-n N] [-p] [-d] file
 
 positional arguments:
   file        path of file containing the text to be analyzed (relative to the

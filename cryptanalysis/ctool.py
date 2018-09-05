@@ -2,7 +2,7 @@
 import numpy as np
 import argparse
 
-class cryptanalysis:
+class ctool:
 
     def __init__(self):
         pass
@@ -126,7 +126,7 @@ def main():
         return
     file = open(args.file, 'r')
     text = file.read().upper()
-    functionality = cryptanalysis()
+    functionality = ctool()
     if args.c:
         print(functionality.get_char_frequencies(text))
     if args.n:
