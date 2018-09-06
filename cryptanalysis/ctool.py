@@ -71,8 +71,9 @@ class ctool:
         :return: a string composed of info about suggested periods and possibly info about the repeats that are found
         """
         out_str1, out_str2 = '', ''
-        repeat_info = []
+        repeat_info, lpr = [], []
         ri_row = 0
+        text = text
         for cut_sz in range(len(text)/2, 1, -1):
             cut_history = []
             for offset in range(cut_sz):
@@ -82,9 +83,8 @@ class ctool:
                     if cur_cut in cut_history:
                         match_start_ind = cut_history[cut_history.index(cur_cut)+1]
                         period = max(start_ind, match_start_ind) - min(start_ind, match_start_ind)
-                        add_str = str(period) + ' is likely a multiple of the period length, '
-                        if add_str not in out_str1:
-                            out_str1 += add_str
+                        if period not in lpr:
+                            lpr += [period]
                         if print_repeat:
                             repeat_info += [[cur_cut, start_ind, cut_history[cut_history.index(cur_cut)],
                                                    match_start_ind, period]]
@@ -95,17 +95,18 @@ class ctool:
         print_history = []
         for i in range(ri_row):
             if repeat_info[i][1] < repeat_info[i][3]:
-                if not [repeat_info[i][1], repeat_info[i][3]] in print_history:
+                if [repeat_info[i][1], repeat_info[i][3]] not in print_history:
                     out_str2 += ('\t' + repeat_info[i][0] + ' (start ind: ' + str(repeat_info[i][1]) + ') : ' \
                               + repeat_info[i][2] + ' (start ind: ' \
                               + str(repeat_info[i][3]) + ') suggests ' + str(repeat_info[i][4])) + '\n'
                     print_history += [[repeat_info[i][1], repeat_info[i][3]]]
             else:
-                if not [repeat_info[i][3], repeat_info[i][1]] in print_history:
+                if [repeat_info[i][3], repeat_info[i][1]] not in print_history:
                     out_str2 += ('\t' + repeat_info[i][2] + \
                               ' (start ind: ' + str(repeat_info[i][3]) + ') : ' + repeat_info[i][0] + ' (start ind: ' \
                               + str(repeat_info[i][1]) + ') suggests ' + str(repeat_info[i][4])) + '\n'
                     print_history += [[repeat_info[i][3], repeat_info[i][1]]]
+        out_str1 = 'likely multiples of the period length: ' + str(lpr)
         return out_str1 + '\n' + out_str2
 
 def main():
@@ -125,14 +126,14 @@ def main():
         print("invalid input")
         return
     file = open(args.file, 'r')
-    text = file.read().upper()
+    text = file.read().replace(' ','').replace('\t','').replace('\n','').upper()
     functionality = ctool()
     if args.c:
-        print(functionality.get_char_frequencies(text))
+        print(functionality.get_char_frequencies(text)+'\n')
     if args.n:
-        print(functionality.get_ngram_frequencies(text, int(args.n)))
+        print(functionality.get_ngram_frequencies(text, int(args.n))+'\n')
     if args.p and not args.d:
-        print(functionality.get_possible_periods(text))
+        print(functionality.get_possible_periods(text)+'\n')
     if args.p and args.d:
         print(functionality.get_possible_periods(text, True))
 
