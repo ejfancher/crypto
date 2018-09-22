@@ -4,7 +4,8 @@ It was designed with Python 3.7
 
 Libraries used:
     argparse: for parsing command line options
-    numpy: for the use of the .argmax() method which returns the index of the largest element of a nplist object
+    numpy: for list creation, manipulation and analysis routines. For example the numpy argmax() method which returns
+    the index of the largest element of a nplist object is used in my get_ngram_frequencies() method
 
 
 

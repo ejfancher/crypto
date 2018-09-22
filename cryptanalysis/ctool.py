@@ -74,24 +74,25 @@ class ctool:
         repeat_info, lpr = [], []
         ri_row = 0
         text = text
+
         for cut_sz in range(len(text)/2, 1, -1):
-            cut_history = []
+            cut_history = np.empty(shape=(0, 2), dtype=object)
             for offset in range(cut_sz):
                 start_ind = offset
                 while start_ind+(cut_sz-1) < len(text):
                     cur_cut = text[start_ind:(start_ind + cut_sz)]
                     if cur_cut in cut_history:
-                        match_start_ind = cut_history[cut_history.index(cur_cut)+1]
+                        match_start_ind = cut_history[np.where(cut_history == cur_cut)[0][0]][1]
                         period = max(start_ind, match_start_ind) - min(start_ind, match_start_ind)
                         if period not in lpr:
                             lpr += [period]
                         if print_repeat:
-                            repeat_info += [[cur_cut, start_ind, cut_history[cut_history.index(cur_cut)],
-                                                   match_start_ind, period]]
+                            repeat_info += [[cur_cut, start_ind, str(np.take(cut_history,
+                                        np.where(cut_history == cur_cut)[0][0], axis=0)[0]), match_start_ind, period]]
                             ri_row += 1
-                    cut_history += [cur_cut]
-                    cut_history += [start_ind]
+                    cut_history = np.append(cut_history, np.array([[cur_cut, start_ind]], dtype=object), axis=0)
                     start_ind += cut_sz
+
         print_history = []
         for i in range(ri_row):
             if repeat_info[i][1] < repeat_info[i][3]:
@@ -108,6 +109,7 @@ class ctool:
                     print_history += [[repeat_info[i][3], repeat_info[i][1]]]
         out_str1 = 'likely multiples of the period length: ' + str(lpr)
         return out_str1 + '\n' + out_str2
+
 
 def main():
     """
