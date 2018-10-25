@@ -1,12 +1,12 @@
 cwallet:
 --------
 
-cwallet is a command line cryptocurrency wallet that allows you to generate an
-asymmetric key pair and encode the public key as a Bitcoin wallet address.
+cwallet is a command line cryptocurrency wallet that allows you to generate a
+private key and then a Bitcoin address from that private key.
 
 The number of different cryptographic processes used in a bitcoin wallet is
-immense. Most notably is the elliptic curve algorithm and hash functions that
-are used.
+immense. Some of the most notable processes are the elliptic curve algorithm and
+hash functions that are used.
 
  
 
