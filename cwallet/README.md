@@ -1,8 +1,8 @@
 cwallet:
 --------
 
-cwallet is a CLI that allows you to generate an asymmetric key pair and encode
-the public key as a Bitcoin wallet address.
+cwallet is a command line cryptocurrency wallet that allows you to generate an
+asymmetric key pair and encode the public key as a Bitcoin wallet address.
 
 The number of different cryptographic processes used in a bitcoin wallet is
 immense. Most notably is the elliptic curve algorithm and hash functions that
