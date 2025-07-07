@@ -2,6 +2,7 @@
 import numpy as np
 import argparse
 
+
 class ctool:
 
     def __init__(self):
@@ -19,10 +20,10 @@ class ctool:
             if ord(char) > 127:
                 continue
             alpha_index[ord(char)] += 1
-        out_str = ''
+        out_str = ""
         for i in range(128):
             if alpha_index[i] != 0 and chr(i).isalpha():
-                out_str += chr(i) + ':' + str(alpha_index[i])+', '
+                out_str += chr(i) + ":" + str(alpha_index[i]) + ", "
         return out_str
 
     def get_ngram_frequencies(self, text, n, alpha_only=True):
@@ -38,26 +39,28 @@ class ctool:
         if n > BMAX:
             print("cannot find ngrams of length greater than the text")
             return
-        ngs = ['' for i in range(BMAX)]     # list of unique ngrams scanned
-        ngc = np.array([-1 for i in range(BMAX)], dtype=np.int16)   # for int A, ngc[A] is the number of ngs[A]'s found
-        for i in range(len(text)-n+1):
-            ngram = text[i:i + n]
+        ngs = ["" for i in range(BMAX)]  # list of unique ngrams scanned
+        ngc = np.array(
+            [-1 for i in range(BMAX)], dtype=np.int16
+        )  # for int A, ngc[A] is the number of ngs[A]'s found
+        for i in range(len(text) - n + 1):
+            ngram = text[i : i + n]
             if alpha_only and not ngram.isalpha():
                 continue
             for j in range(BMAX):
                 if ngs[j] == ngram:
                     ngc[j] += 1
                     break
-                elif ngs[j] == '':
+                elif ngs[j] == "":
                     ngs[j] = ngram
                     ngc[j] = 1
                     break
-        out_str = ''
+        out_str = ""
         for i in range(len(ngs)):
             if ngc[i] == -1:
                 break
             cur_ind = ngc.argmax()
-            out_str += str(ngs[cur_ind]) + ':' + str(ngc[cur_ind])+', '
+            out_str += str(ngs[cur_ind]) + ":" + str(ngc[cur_ind]) + ", "
             ngc[cur_ind] = -2
         return out_str
 
@@ -70,24 +73,33 @@ class ctool:
         :param print_repeat: whether or not to return information on the repeats that are found
         :return: a string composed of info about suggested periods and possibly info about the repeats that are found
         """
-        out_str1, out_str2 = '', ''
+        out_str1, out_str2 = "", ""
         repeat_info, lpr = [], []
         ri_row = 0
         text = text
-        for cut_sz in range(len(text)/2, 1, -1):
+        for cut_sz in range(len(text) / 2, 1, -1):
             cut_history = []
             for offset in range(cut_sz):
                 start_ind = offset
-                while start_ind+(cut_sz-1) < len(text):
-                    cur_cut = text[start_ind:(start_ind + cut_sz)]
+                while start_ind + (cut_sz - 1) < len(text):
+                    cur_cut = text[start_ind : (start_ind + cut_sz)]
                     if cur_cut in cut_history:
-                        match_start_ind = cut_history[cut_history.index(cur_cut)+1]
-                        period = max(start_ind, match_start_ind) - min(start_ind, match_start_ind)
+                        match_start_ind = cut_history[cut_history.index(cur_cut) + 1]
+                        period = max(start_ind, match_start_ind) - min(
+                            start_ind, match_start_ind
+                        )
                         if period not in lpr:
                             lpr += [period]
                         if print_repeat:
-                            repeat_info += [[cur_cut, start_ind, cut_history[cut_history.index(cur_cut)],
-                                                   match_start_ind, period]]
+                            repeat_info += [
+                                [
+                                    cur_cut,
+                                    start_ind,
+                                    cut_history[cut_history.index(cur_cut)],
+                                    match_start_ind,
+                                    period,
+                                ]
+                            ]
                             ri_row += 1
                     cut_history += [cur_cut]
                     cut_history += [start_ind]
@@ -96,46 +108,83 @@ class ctool:
         for i in range(ri_row):
             if repeat_info[i][1] < repeat_info[i][3]:
                 if [repeat_info[i][1], repeat_info[i][3]] not in print_history:
-                    out_str2 += ('\t' + repeat_info[i][0] + ' (start ind: ' + str(repeat_info[i][1]) + ') : ' \
-                              + repeat_info[i][2] + ' (start ind: ' \
-                              + str(repeat_info[i][3]) + ') suggests ' + str(repeat_info[i][4])) + '\n'
+                    out_str2 += (
+                        "\t"
+                        + repeat_info[i][0]
+                        + " (start ind: "
+                        + str(repeat_info[i][1])
+                        + ") : "
+                        + repeat_info[i][2]
+                        + " (start ind: "
+                        + str(repeat_info[i][3])
+                        + ") suggests "
+                        + str(repeat_info[i][4])
+                    ) + "\n"
                     print_history += [[repeat_info[i][1], repeat_info[i][3]]]
             else:
                 if [repeat_info[i][3], repeat_info[i][1]] not in print_history:
-                    out_str2 += ('\t' + repeat_info[i][2] + \
-                              ' (start ind: ' + str(repeat_info[i][3]) + ') : ' + repeat_info[i][0] + ' (start ind: ' \
-                              + str(repeat_info[i][1]) + ') suggests ' + str(repeat_info[i][4])) + '\n'
+                    out_str2 += (
+                        "\t"
+                        + repeat_info[i][2]
+                        + " (start ind: "
+                        + str(repeat_info[i][3])
+                        + ") : "
+                        + repeat_info[i][0]
+                        + " (start ind: "
+                        + str(repeat_info[i][1])
+                        + ") suggests "
+                        + str(repeat_info[i][4])
+                    ) + "\n"
                     print_history += [[repeat_info[i][3], repeat_info[i][1]]]
-        out_str1 = 'likely multiples of the period length: ' + str(lpr)
-        return out_str1 + '\n' + out_str2
+        out_str1 = "likely multiples of the period length: " + str(lpr)
+        return out_str1 + "\n" + out_str2
+
 
 def main():
     """
     Provide the argument input capabilities and act as the driver for the program
     """
     get = argparse.ArgumentParser()
-    get.add_argument("file", help="path of file containing the text to be analyzed (relative to the directory ctool.py is in)")
-    get.add_argument("-c", help="display frequency distrubution of characters in the file", action="store_true")
-    get.add_argument("-n", help="enter the length of ngram after this option to display the frequency distrubution of "
-                                "such ngrams in the text")
-    get.add_argument("-p", help="display possible periods based on repeats found in the text", action="store_true")
-    get.add_argument("-d", help="supplementary to -p, display detailed information on the repeats found",
-                     action="store_true")
+    get.add_argument(
+        "file",
+        help="path of file containing the text to be analyzed (relative to the directory ctool.py is in)",
+    )
+    get.add_argument(
+        "-c",
+        help="display frequency distrubution of characters in the file",
+        action="store_true",
+    )
+    get.add_argument(
+        "-n",
+        help="enter the length of ngram after this option to display the frequency distrubution of "
+        "such ngrams in the text",
+    )
+    get.add_argument(
+        "-p",
+        help="display possible periods based on repeats found in the text",
+        action="store_true",
+    )
+    get.add_argument(
+        "-d",
+        help="supplementary to -p, display detailed information on the repeats found",
+        action="store_true",
+    )
     args = get.parse_args()
     if (args.d and not args.p) or (not args.file):
         print("invalid input")
         return
-    file = open(args.file, 'r')
-    text = file.read().replace(' ','').replace('\t','').replace('\n','').upper()
+    file = open(args.file, "r")
+    text = file.read().replace(" ", "").replace("\t", "").replace("\n", "").upper()
     functionality = ctool()
     if args.c:
-        print(functionality.get_char_frequencies(text)+'\n')
+        print(functionality.get_char_frequencies(text) + "\n")
     if args.n:
-        print(functionality.get_ngram_frequencies(text, int(args.n))+'\n')
+        print(functionality.get_ngram_frequencies(text, int(args.n)) + "\n")
     if args.p and not args.d:
-        print(functionality.get_possible_periods(text)+'\n')
+        print(functionality.get_possible_periods(text) + "\n")
     if args.p and args.d:
         print(functionality.get_possible_periods(text, True))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

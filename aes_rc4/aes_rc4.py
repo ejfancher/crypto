@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 import argparse
 
+
 class RC4:
     def KSA(self, key):
         n = len(key)
@@ -37,18 +38,19 @@ class RC4:
             text = [ord(c) for c in text]
         key = [ord(c) for c in key]
         keystream = self.get_keystream(key, len(text))
-        res = b''
+        res = b""
         for i in range(len(text)):
-            val = bytes(chr(text[i] ^ keystream[i]), 'iso-8859-1')
-            res += val;
+            val = bytes(chr(text[i] ^ keystream[i]), "iso-8859-1")
+            res += val
         return res
+
 
 class AES:
     def encrypt(self, text, key, iv):
         backend = default_backend()
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
         encryptor = cipher.encryptor()
-        ct = encryptor.update(bytes(text, 'iso-8859-1')) + encryptor.finalize()
+        ct = encryptor.update(bytes(text, "iso-8859-1")) + encryptor.finalize()
         return ct
 
     def decrypt(self, text, key, iv):
@@ -58,14 +60,15 @@ class AES:
         pt = decryptor.update(text) + decryptor.finalize()
         return pt
 
+
 def main():
     rc4_cipher = RC4()
     aes_cipher = AES()
 
     get = argparse.ArgumentParser()
     get.add_argument("text", help="the text to *cipher")
-    get.add_argument("key", nargs='?', help="the key")
-    get.add_argument("iv", nargs='?', help="initial value")
+    get.add_argument("key", nargs="?", help="the key")
+    get.add_argument("iv", nargs="?", help="initial value")
     get.add_argument("-rc4", help="Use RC4 cipher", action="store_true")
     get.add_argument("-aes", help="Use AES", action="store_true")
     get.add_argument("-e", help="encrypt", action="store_true")
@@ -79,16 +82,26 @@ def main():
             print(encrypted.hex())
         elif args.d:
             encrypted = rc4_cipher.encrypt(args.key, args.text, True)
-            print(encrypted.decode('utf-8'))
+            print(encrypted.decode("utf-8"))
     elif args.aes:
         if args.e:
             for i in range(16 - (len(args.text) % 16)):
-                args.text += ' '
+                args.text += " "
             key = os.urandom(32)
             iv = os.urandom(16)
-            print('%s %s %s' % (aes_cipher.encrypt(args.text, key, iv).hex(), key.hex(), iv.hex()))
+            print(
+                "%s %s %s"
+                % (aes_cipher.encrypt(args.text, key, iv).hex(), key.hex(), iv.hex())
+            )
         elif args.d:
-            print(aes_cipher.decrypt(bytes.fromhex(args.text), bytes.fromhex(args.key), bytes.fromhex(args.iv)))
+            print(
+                aes_cipher.decrypt(
+                    bytes.fromhex(args.text),
+                    bytes.fromhex(args.key),
+                    bytes.fromhex(args.iv),
+                )
+            )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

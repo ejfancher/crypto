@@ -12,6 +12,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 import codecs
 import argparse
 
+
 class RSA_:
     def __init__(self):
         pass
@@ -22,8 +23,12 @@ class RSA_:
 
         public_key = key.publickey().export_key()
 
-        return "RSA PRIVATE KEY:\n"+private_key.hex()+"\n\nRSA PUBLIC KEY:\n"+public_key.hex()
-
+        return (
+            "RSA PRIVATE KEY:\n"
+            + private_key.hex()
+            + "\n\nRSA PUBLIC KEY:\n"
+            + public_key.hex()
+        )
 
     # The following code encrypts a piece of data for a receiver we have the RSA public key of.
     def encrypt(self, ptFile, publicKey):
@@ -43,7 +48,10 @@ class RSA_:
         cipher_aes = AES.new(session_key, AES.MODE_EAX)
         ciphertext, tag = cipher_aes.encrypt_and_digest(data)
 
-        [file_out.write(x) for x in (enc_session_key, cipher_aes.nonce, tag, ciphertext)]
+        [
+            file_out.write(x)
+            for x in (enc_session_key, cipher_aes.nonce, tag, ciphertext)
+        ]
 
     # The receiver has the private RSA key. They will use it to decrypt the session key first, and with that the rest of the file:
     def decrypt(self, ctFile, privateKey):
@@ -51,8 +59,9 @@ class RSA_:
 
         private_key = RSA.import_key(privateKey)
 
-        enc_session_key, nonce, tag, ciphertext = \
-            [file_in.read(x) for x in (private_key.size_in_bytes(), 16, 16, -1)]
+        enc_session_key, nonce, tag, ciphertext = [
+            file_in.read(x) for x in (private_key.size_in_bytes(), 16, 16, -1)
+        ]
 
         # Decrypt the session key with the private RSA key
         cipher_rsa = PKCS1_OAEP.new(private_key)
@@ -65,24 +74,28 @@ class RSA_:
         file_out = open(ctFile, "w")
         file_out.write(data.decode("utf-8"))
 
+
 def main():
 
     rsa = RSA_()
 
     get = argparse.ArgumentParser()
-    get.add_argument("file", help="the file to encrypt or decrypt", nargs='?', default="")
-    get.add_argument("key", help="the public or private key", nargs='?', default="")
+    get.add_argument(
+        "file", help="the file to encrypt or decrypt", nargs="?", default=""
+    )
+    get.add_argument("key", help="the public or private key", nargs="?", default="")
     get.add_argument("-e", help="encrypt", action="store_true")
     get.add_argument("-d", help="decrypt", action="store_true")
 
     args = get.parse_args()
 
-    if args.file!='' and args.key!='' and args.e:
-        rsa.encrypt(args.file, codecs.decode(args.key, encoding='hex'))
-    elif args.file!='' and args.key!='' and args.d:
-        rsa.decrypt(args.file, codecs.decode(args.key, encoding='hex'))
-    elif args.file=='' and args.key=='' and not args.e and not args.d:
+    if args.file != "" and args.key != "" and args.e:
+        rsa.encrypt(args.file, codecs.decode(args.key, encoding="hex"))
+    elif args.file != "" and args.key != "" and args.d:
+        rsa.decrypt(args.file, codecs.decode(args.key, encoding="hex"))
+    elif args.file == "" and args.key == "" and not args.e and not args.d:
         print(rsa.gen_keys())
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     main()

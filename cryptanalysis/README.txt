@@ -1,4 +1,4 @@
-This program is a command line tool that can find various frequency distributions and repeats of a text.
+cryptotool (find various frequency distributions and repeats of a text or check for differences between two similar rootca certs)
 
 It was designed with Python 3.7
 
@@ -25,7 +25,8 @@ optional arguments:
   -p          display possible periods based on repeats found in the text
   -d          supplementary to -p, display detailed information on the repeats
               found
-
+  --cmp-pems  output dump of 2 certs, an expir(ing/ed) rootca cert and it's 
+              replacement. arguments are the 2 certs in such order
 
 
 references:

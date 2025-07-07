@@ -3,10 +3,10 @@ class caesar_cipher:
         return None
 
     def encrypt(self, plain_text, ignore):
-        plain_text = plain_text.upper().replace(' ','')
-        cipher_text = ''
+        plain_text = plain_text.upper().replace(" ", "")
+        cipher_text = ""
         for char in plain_text:
-            tf = ord(char)+3
+            tf = ord(char) + 3
             if tf > 90:
                 tf = 64 + tf - 90
             tf = chr(tf)
@@ -14,7 +14,7 @@ class caesar_cipher:
         return cipher_text
 
     def decrypt(self, cifer_text, ignore):
-        plain_text = ''
+        plain_text = ""
         for char in cifer_text:
             tf = ord(char) - 3
             if tf < 65:
